@@ -1,0 +1,40 @@
+name: Build NFCKosova APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.x'
+          channel: 'stable'
+
+      - name: Gjenero skedaret e Android
+        run: flutter create . --platforms=android --org=com.nfckosova --project-name=nfckosova
+
+      - name: Shkarko Paketat
+        run: flutter pub get
+
+      - name: Kompilo APK
+        run: flutter build apk --release
+
+      - name: Ruaj APK per Shkarkim
+        uses: actions/upload-artifact@v4
+        with:
+          name: NFCKosova-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
